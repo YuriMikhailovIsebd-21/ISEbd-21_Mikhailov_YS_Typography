@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Unity;
+using Unity.Lifetime;
 using TypographyBusinessLogic.BusinessLogics;
 using TypographyContracts.BusinessLogicsContracts;
 using TypographyContracts.StoragesContracts;
-using TypographyListImplement.Implements;
-using Unity;
-using Unity.Lifetime;
+using TypographyFileImplement.Implements;
+using TypographyFileImplement;
 
 namespace TypographyView
 {
@@ -31,13 +32,13 @@ namespace TypographyView
         /// </summary>
         [STAThread]
         static void Main()
-
-{
-Application.SetHighDpiMode(HighDpiMode.SystemAware);
-Application.EnableVisualStyles();
-Application.SetCompatibleTextRenderingDefault(false);
-Application.Run(Container.Resolve<FormMain>());
-}
+        {
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(Container.Resolve<FormMain>());
+            FileDataListSingleton.Save();
+        }
     private static IUnityContainer BuildUnityContainer()
     {
         var currentContainer = new UnityContainer();
