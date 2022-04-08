@@ -8,7 +8,7 @@ using Unity.Lifetime;
 using TypographyBusinessLogic.BusinessLogics;
 using TypographyContracts.BusinessLogicsContracts;
 using TypographyContracts.StoragesContracts;
-using TypographyFileImplement.Implements;
+using TypographyDatabaseImplement.Implements;
 using TypographyFileImplement;
 
 namespace TypographyView
@@ -46,7 +46,7 @@ namespace TypographyView
         ComponentStorage>(new HierarchicalLifetimeManager());
         currentContainer.RegisterType<IOrderStorage, OrderStorage>(new
         HierarchicalLifetimeManager());
-        currentContainer.RegisterType<IPrintedStorage, PrintedStorage>(new
+        currentContainer.RegisterType<IPrintedStorage, PrintedsStorage>(new
         HierarchicalLifetimeManager());
         currentContainer.RegisterType<IComponentLogic, ComponentLogic>(new
         HierarchicalLifetimeManager());
