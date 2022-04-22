@@ -1,4 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using TypographyContracts.BindingModels;
 using TypographyContracts.BusinessLogicsContracts;
@@ -11,20 +18,15 @@ namespace TypographyView
     {
         private readonly IOrderLogic _orderLogic;
 
-        private readonly IReportLogic _reportLogic;
-
-        public FormMain(IOrderLogic orderLogic, IReportLogic reportLogic)
+        public FormMain(IOrderLogic orderLogic)
         {
             InitializeComponent();
             _orderLogic = orderLogic;
-            _reportLogic = reportLogic;
         }
-
         private void FormMain_Load(object sender, EventArgs e)
         {
             LoadData();
         }
-
         private void LoadData()
         {
             try
@@ -32,61 +34,54 @@ namespace TypographyView
                 var list = _orderLogic.Read(null);
                 if (list != null)
                 {
-                    dataGridView.DataSource = list;
-                    dataGridView.Columns[0].Visible = false;
-                    dataGridView.Columns[1].Visible = false;
+                    dataGridViewMain.DataSource = list;
+                    dataGridViewMain.Columns[0].Visible = false;
+                    dataGridViewMain.Columns[1].Visible = false;
+                    dataGridViewMain.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        private void компонентыToolStripMenuItem_Click(object sender, EventArgs e)
+        private void КомпонентыToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var form = Program.Container.Resolve<FormComponents>();
             form.ShowDialog();
         }
-
-        private void изделиеToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ИзделияToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var form = Program.Container.Resolve<FormPrinteds>();
             form.ShowDialog();
         }
-
-        private void buttonCreateOrder_Click(object sender, EventArgs e)
+        private void ButtonCreateOrder_Click(object sender, EventArgs e)
         {
             var form = Program.Container.Resolve<FormCreateOrder>();
             form.ShowDialog();
             LoadData();
         }
-
-        private void buttonTakeOrderInWork_Click(object sender, EventArgs e)
+        private void ButtonTakeOrderInWork_Click(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count == 1)
+            if (dataGridViewMain.SelectedRows.Count == 1)
             {
-                int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                int id = Convert.ToInt32(dataGridViewMain.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    _orderLogic.TakeOrder(new ChangeStatusBindingModel
-                    { OrderId = id });
+                    _orderLogic.TakeOrder(new ChangeStatusBindingModel { OrderId = id });
                     LoadData();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
-
-        private void buttonOrderReady_Click(object sender, EventArgs e)
+        private void ButtonOrderReady_Click(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count == 1)
+            if (dataGridViewMain.SelectedRows.Count == 1)
             {
-                int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                int id = Convert.ToInt32(dataGridViewMain.SelectedRows[0].Cells[0].Value);
                 try
                 {
                     _orderLogic.FinishOrder(new ChangeStatusBindingModel
@@ -98,16 +93,15 @@ namespace TypographyView
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                   MessageBoxIcon.Error);
                 }
             }
         }
-
-        private void buttonDeliveryOrder_Click(object sender, EventArgs e)
+        private void ButtonIssuedOrder_Click(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count == 1)
+            if (dataGridViewMain.SelectedRows.Count == 1)
             {
-                int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                int id = Convert.ToInt32(dataGridViewMain.SelectedRows[0].Cells[0].Value);
                 try
                 {
                     _orderLogic.DeliveryOrder(new ChangeStatusBindingModel { OrderId = id });
@@ -115,37 +109,13 @@ namespace TypographyView
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
-
-        private void buttonRef_Click(object sender, EventArgs e)
+        private void ButtonUpdate_Click(object sender, EventArgs e)
         {
             LoadData();
-        }
-
-        private void списокизделийToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using var dialog = new SaveFileDialog { Filter = "docx|*.docx" };
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                _reportLogic.SavePrintedsToWordFile(new ReportBindingModel { FileName = dialog.FileName });
-                MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void изделияСКомпонентамиToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var form = Program.Container.Resolve<FormReportPrintedComponents>();
-            form.ShowDialog();
-        }
-
-        private void списокЗаказовToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var form = Program.Container.Resolve<FormReportOrders>();
-            form.ShowDialog();
         }
     }
 }

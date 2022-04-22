@@ -10,7 +10,7 @@ namespace TypographyDatabaseImplement
         {
             if (optionsBuilder.IsConfigured == false)
             {
-                optionsBuilder.UseSqlServer(@"Server=localhost;Database=master;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(@"Server=localhost;Database=typography;Trusted_Connection=True;");
             }
             base.OnConfiguring(optionsBuilder);
         }
