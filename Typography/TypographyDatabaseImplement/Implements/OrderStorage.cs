@@ -17,9 +17,12 @@ namespace TypographyDatabaseImplement.Implements
             {
                 return context.Orders
                     .Include(rec => rec.Printed)
+                    .Include(rec => rec.Client)
                     .Select(rec => new OrderViewModel
                     {
                         Id = rec.Id,
+                        ClientId = rec.ClientId,
+                        ClientFIO = rec.Client.ClientFIO,
                         PrintedId = rec.PrintedId,
                         PrintedName = rec.Printed.PrintedName,
                         Count = rec.Count,
@@ -43,10 +46,15 @@ namespace TypographyDatabaseImplement.Implements
             {
                 return context.Orders
                     .Include(rec => rec.Printed)
-                    .Where(rec => rec.PrintedId == model.PrintedId)
+                    .Include(rec => rec.Client)
+                    .Where(rec => (!model.DateFrom.HasValue && !model.DateTo.HasValue && rec.DateCreate.Date == model.DateCreate.Date) ||
+                    (model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate.Date >= model.DateFrom.Value.Date && rec.DateCreate.Date <= model.DateTo.Value.Date) ||
+                    (model.ClientId.HasValue && rec.ClientId == model.ClientId))
                     .Select(rec => new OrderViewModel
                     {
                         Id = rec.Id,
+                        ClientId = rec.ClientId,
+                        ClientFIO = rec.Client.ClientFIO,
                         PrintedId = rec.PrintedId,
                         PrintedName = rec.Printed.PrintedName,
                         Count = rec.Count,
@@ -68,11 +76,13 @@ namespace TypographyDatabaseImplement.Implements
 
             using (var context = new TypographyDatabase())
             {
-                Order order = context.Orders.Include(rec => rec.Printed).FirstOrDefault(rec => rec.Id == model.Id);
+                Order order = context.Orders.Include(rec => rec.Printed).Include(rec => rec.Client).FirstOrDefault(rec => rec.Id == model.Id);
                 return order != null ?
                 new OrderViewModel
                 {
                     Id = order.Id,
+                    ClientId = order.ClientId,
+                    ClientFIO = order.Client.ClientFIO,
                     PrintedId = order.PrintedId,
                     PrintedName = order.Printed.PrintedName,
                     Count = order.Count,
@@ -91,6 +101,7 @@ namespace TypographyDatabaseImplement.Implements
             {
                 var order = new Order
                 {
+                    ClientId = model.ClientId.Value,
                     PrintedId = model.PrintedId,
                     Count = model.Count,
                     Sum = model.Sum,
@@ -114,6 +125,7 @@ namespace TypographyDatabaseImplement.Implements
                 {
                     throw new Exception("Элемент не найден");
                 }
+                order.ClientId = model.ClientId.Value;
                 order.PrintedId = model.PrintedId;
                 order.Count = model.Count;
                 order.Sum = model.Sum;

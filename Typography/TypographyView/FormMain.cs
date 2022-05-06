@@ -1,9 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
-using TypographyContracts.BindingModels;
+﻿using TypographyContracts.BindingModels;
 using TypographyContracts.BusinessLogicsContracts;
+using System;
+using System.Windows.Forms;
 using Unity;
-
 
 namespace TypographyView
 {
@@ -35,6 +34,8 @@ namespace TypographyView
                     dataGridView.DataSource = list;
                     dataGridView.Columns[0].Visible = false;
                     dataGridView.Columns[1].Visible = false;
+                    dataGridView.Columns[2].Visible = false;
+                    dataGridView.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
             catch (Exception ex)
@@ -126,7 +127,7 @@ namespace TypographyView
             LoadData();
         }
 
-        private void списокизделийToolStripMenuItem_Click(object sender, EventArgs e)
+        private void списокИзделийToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using var dialog = new SaveFileDialog { Filter = "docx|*.docx" };
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -145,6 +146,12 @@ namespace TypographyView
         private void списокЗаказовToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var form = Program.Container.Resolve<FormReportOrders>();
+            form.ShowDialog();
+        }
+
+        private void клиентыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Program.Container.Resolve<FormClients>();
             form.ShowDialog();
         }
     }

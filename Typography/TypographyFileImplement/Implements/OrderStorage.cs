@@ -1,27 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TypographyFileImplement.Models;
 using TypographyContracts.BindingModels;
 using TypographyContracts.StoragesContracts;
 using TypographyContracts.ViewModels;
-using TypographyFileImplement.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TypographyFileImplement.Implements
 {
     public class OrderStorage : IOrderStorage
     {
-        private readonly FileDataListSingleton source;
+        private readonly FileDataListSingleton _source;
 
         public OrderStorage()
         {
-            source = FileDataListSingleton.GetInstance();
+            _source = FileDataListSingleton.GetInstance();
         }
+
         public List<OrderViewModel> GetFullList()
         {
-            return source.Orders.Select(CreateModel).ToList();
+            return _source.Orders
+                .Select(CreateModel)
+                .ToList();
         }
+
         public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
         {
             if (model == null)
@@ -29,8 +31,14 @@ namespace TypographyFileImplement.Implements
                 return null;
             }
 
-            return source.Orders.Where(rec => rec.Id == model.Id).Select(CreateModel).ToList();
+            return _source.Orders
+                .Where(rec => (!model.DateFrom.HasValue && !model.DateTo.HasValue && rec.DateCreate.Date == model.DateCreate.Date) ||
+                (model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate.Date >= model.DateFrom.Value.Date && rec.DateCreate.Date <= model.DateTo.Value.Date) ||
+                (model.ClientId.HasValue && rec.ClientId == model.ClientId))
+                .Select(CreateModel)
+                .ToList();
         }
+
         public OrderViewModel GetElement(OrderBindingModel model)
         {
             if (model == null)
@@ -38,38 +46,43 @@ namespace TypographyFileImplement.Implements
                 return null;
             }
 
-            var order = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+            Order order = _source.Orders.FirstOrDefault(recOder => recOder.Id == model.Id);
             return order != null ? CreateModel(order) : null;
         }
+
         public void Insert(OrderBindingModel model)
         {
-            int maxId = source.Orders.Count > 0 ? source.Orders.Max(rec => rec.Id) : 0;
-            var order = new Order { Id = maxId + 1, DateCreate = DateTime.Now };
-            source.Orders.Add(CreateModel(model, order));
+            int maxId = _source.Orders.Count > 0 ? _source.Orders.Max(recOder => recOder.Id) : 0;
+            var order = new Order { Id = maxId + 1 };
+            _source.Orders.Add(CreateModel(model, order));
         }
+
         public void Update(OrderBindingModel model)
         {
-            var order = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+            Order order = _source.Orders.FirstOrDefault(recOder => recOder.Id == model.Id);
             if (order == null)
             {
                 throw new Exception("Заказ не найден");
             }
             CreateModel(model, order);
         }
+
         public void Delete(OrderBindingModel model)
         {
-            Order order = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+            Order order = _source.Orders.FirstOrDefault(recOrder => recOrder.Id == model.Id);
             if (order != null)
             {
-                source.Orders.Remove(order);
+                _source.Orders.Remove(order);
             }
             else
             {
                 throw new Exception("Заказ не найден");
             }
         }
+
         private Order CreateModel(OrderBindingModel model, Order order)
         {
+            order.ClientId = (int)model.ClientId;
             order.PrintedId = model.PrintedId;
             order.Count = model.Count;
             order.Sum = model.Sum;
@@ -84,13 +97,15 @@ namespace TypographyFileImplement.Implements
             return new OrderViewModel
             {
                 Id = order.Id,
+                PrintedName = _source.Printeds.FirstOrDefault(printed => printed.Id == order.PrintedId)?.PrintedName,
                 PrintedId = order.PrintedId,
-                PrintedName = source.Printeds.FirstOrDefault(printed => printed.Id == order.PrintedId)?.PrintedName,
                 Count = order.Count,
                 Sum = order.Sum,
                 Status = order.Status,
                 DateCreate = order.DateCreate,
-                DateImplement = order.DateImplement
+                DateImplement = order.DateImplement,
+                ClientId = order.ClientId,
+                ClientFIO = _source.Clients.FirstOrDefault(rec => rec.Id == order.ClientId)?.ClientFIO,
             };
         }
     }

@@ -39,6 +39,7 @@ namespace TypographyBusinessLogic.BusinessLogics
             {
                 PrintedId = model.PrintedId,
                 Count = model.Count,
+                ClientId = model.ClientId,
                 Sum = model.Sum,
                 DateCreate = DateTime.Now,
                 Status = OrderStatus.Принят
@@ -63,6 +64,7 @@ namespace TypographyBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 PrintedId = order.PrintedId,
+                ClientId = order.ClientId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
@@ -89,6 +91,7 @@ namespace TypographyBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 PrintedId = order.PrintedId,
+                ClientId = order.ClientId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
@@ -115,6 +118,7 @@ namespace TypographyBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 PrintedId = order.PrintedId,
+                ClientId = order.ClientId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
