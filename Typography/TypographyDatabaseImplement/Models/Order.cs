@@ -10,6 +10,8 @@ namespace TypographyDatabaseImplement.Models
 
         public int PrintedId { get; set; }
 
+        public int ClientId { get; set; }
+
         [Required]
         public int Count { get; set; }
 
@@ -25,5 +27,7 @@ namespace TypographyDatabaseImplement.Models
         public DateTime? DateImplement { get; set; }
 
         public virtual Printed Printed { get; set; }
+
+        public virtual Client Client { get; set; }
     }
 }

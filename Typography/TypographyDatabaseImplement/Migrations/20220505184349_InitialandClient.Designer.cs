@@ -10,8 +10,8 @@ using TypographyDatabaseImplement;
 namespace TypographyDatabaseImplement.Migrations
 {
     [DbContext(typeof(TypographyDatabase))]
-    [Migration("20220408052342_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220505184349_InitialandClient")]
+    partial class InitialandClient
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,30 @@ namespace TypographyDatabaseImplement.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.15")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("TypographyDatabaseImplement.Models.Client", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClientFIO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clients");
+                });
 
             modelBuilder.Entity("TypographyDatabaseImplement.Models.Component", b =>
                 {
@@ -44,6 +68,9 @@ namespace TypographyDatabaseImplement.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
@@ -63,6 +90,8 @@ namespace TypographyDatabaseImplement.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("PrintedId");
 
@@ -115,11 +144,19 @@ namespace TypographyDatabaseImplement.Migrations
 
             modelBuilder.Entity("TypographyDatabaseImplement.Models.Order", b =>
                 {
+                    b.HasOne("TypographyDatabaseImplement.Models.Client", "Client")
+                        .WithMany("Orders")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TypographyDatabaseImplement.Models.Printed", "Printed")
                         .WithMany("Orders")
                         .HasForeignKey("PrintedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Client");
 
                     b.Navigation("Printed");
                 });
@@ -141,6 +178,11 @@ namespace TypographyDatabaseImplement.Migrations
                     b.Navigation("Component");
 
                     b.Navigation("Printed");
+                });
+
+            modelBuilder.Entity("TypographyDatabaseImplement.Models.Client", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("TypographyDatabaseImplement.Models.Component", b =>

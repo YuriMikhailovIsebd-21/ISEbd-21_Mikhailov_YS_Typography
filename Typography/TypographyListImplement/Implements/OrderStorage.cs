@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TypographyListImplement.Models;
 using TypographyContracts.BindingModels;
 using TypographyContracts.StoragesContracts;
 using TypographyContracts.ViewModels;
-using TypographyListImplement.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TypographyListImplement.Implements
 {
@@ -18,31 +16,74 @@ namespace TypographyListImplement.Implements
         {
             source = DataListSingleton.GetInstance();
         }
+
+        private Order CreateModel(OrderBindingModel model, Order order)
+        {
+            order.PrintedId = model.PrintedId;
+            order.Count = model.Count;
+            order.Sum = model.Sum;
+            order.Status = model.Status;
+            order.DateCreate = model.DateCreate;
+            order.DateImplement = model.DateImplement;
+
+            return order;
+        }
+
+        private OrderViewModel CreateModel(Order order)
+        {
+            string clientFIO = null;
+            foreach (var client in source.Clients)
+            {
+                if (client.Id == order.ClientId)
+                {
+                    clientFIO = client.ClientFIO;
+                    break;
+                }
+            }
+            return new OrderViewModel
+            {
+                Id = order.Id,
+                PrintedName = source.Printeds.FirstOrDefault(printed => printed.Id == order.PrintedId)?.PrintedName,
+                PrintedId = order.PrintedId,
+                Count = order.Count,
+                Sum = order.Sum,
+                Status = order.Status,
+                DateCreate = order.DateCreate,
+                DateImplement = order.DateImplement,
+                ClientId = order.ClientId,
+                ClientFIO = clientFIO
+            };
+        }
+
         public List<OrderViewModel> GetFullList()
         {
-            var result = new List<OrderViewModel>();
+            List<OrderViewModel> result = new List<OrderViewModel>();
             foreach (var order in source.Orders)
             {
                 result.Add(CreateModel(order));
             }
             return result;
         }
+
         public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
         {
             if (model == null)
             {
                 return null;
             }
-            var result = new List<OrderViewModel>();
+            List<OrderViewModel> result = new List<OrderViewModel>();
             foreach (var order in source.Orders)
             {
-                if (order.PrintedId == model.PrintedId)
+                if ((!model.DateFrom.HasValue && !model.DateTo.HasValue && order.DateCreate.Date == model.DateCreate.Date) ||
+                    (model.DateFrom.HasValue && model.DateTo.HasValue && order.DateCreate.Date >= model.DateFrom.Value.Date && order.DateCreate.Date <= model.DateTo.Value.Date) ||
+                    (model.ClientId.HasValue && order.ClientId == model.ClientId))
                 {
                     result.Add(CreateModel(order));
                 }
             }
             return result;
         }
+
         public OrderViewModel GetElement(OrderBindingModel model)
         {
             if (model == null)
@@ -51,16 +92,20 @@ namespace TypographyListImplement.Implements
             }
             foreach (var order in source.Orders)
             {
-                if (model.Id == order.Id)
+                if (order.Id == model.Id)
                 {
                     return CreateModel(order);
                 }
             }
             return null;
         }
+
         public void Insert(OrderBindingModel model)
         {
-            var tempOrder = new Order { Id = 1 };
+            Order tempOrder = new Order
+            {
+                Id = 1
+            };
             foreach (var order in source.Orders)
             {
                 if (order.Id >= tempOrder.Id)
@@ -70,12 +115,14 @@ namespace TypographyListImplement.Implements
             }
             source.Orders.Add(CreateModel(model, tempOrder));
         }
+
         public void Update(OrderBindingModel model)
         {
             Order tempOrder = null;
+
             foreach (var order in source.Orders)
             {
-                if (model.Id == order.Id)
+                if (order.Id == model.Id)
                 {
                     tempOrder = order;
                 }
@@ -86,6 +133,7 @@ namespace TypographyListImplement.Implements
             }
             CreateModel(model, tempOrder);
         }
+
         public void Delete(OrderBindingModel model)
         {
             for (int i = 0; i < source.Orders.Count; ++i)
@@ -97,39 +145,6 @@ namespace TypographyListImplement.Implements
                 }
             }
             throw new Exception("Элемент не найден");
-        }
-        public static Order CreateModel(OrderBindingModel model, Order order)
-        {
-            order.PrintedId = model.PrintedId;
-            order.Count = model.Count;
-            order.Sum = model.Sum;
-            order.Status = model.Status;
-            order.DateCreate = model.DateCreate;
-            order.DateImplement = model.DateImplement;
-            return order;
-        }
-        public OrderViewModel CreateModel(Order order)
-        {
-            string printedName = string.Empty;
-            foreach (var printed in source.Printeds)
-            {
-                if (printed.Id == order.PrintedId)
-                {
-                    printedName = printed.PrintedName;
-                    break;
-                }
-            }
-            return new OrderViewModel
-            {
-                Id = order.Id,
-                PrintedId = order.PrintedId,
-                PrintedName = printedName,
-                Count = order.Count,
-                Sum = order.Sum,
-                Status = order.Status,
-                DateCreate = order.DateCreate,
-                DateImplement = order.DateImplement
-            };
         }
     }
 }
