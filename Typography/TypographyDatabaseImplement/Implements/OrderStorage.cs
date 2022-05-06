@@ -18,12 +18,15 @@ namespace TypographyDatabaseImplement.Implements
                 return context.Orders
                     .Include(rec => rec.Printed)
                     .Include(rec => rec.Client)
+                    .Include(rec => rec.Implementer)
                     .Select(rec => new OrderViewModel
                     {
                         Id = rec.Id,
                         ClientId = rec.ClientId,
                         ClientFIO = rec.Client.ClientFIO,
                         PrintedId = rec.PrintedId,
+                        ImplementerId = rec.ImplementerId,
+                        ImplementerFIO = rec.Implementer.ImplementerFIO,
                         PrintedName = rec.Printed.PrintedName,
                         Count = rec.Count,
                         Sum = rec.Sum,
@@ -49,13 +52,17 @@ namespace TypographyDatabaseImplement.Implements
                     .Include(rec => rec.Client)
                     .Where(rec => (!model.DateFrom.HasValue && !model.DateTo.HasValue && rec.DateCreate.Date == model.DateCreate.Date) ||
                     (model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate.Date >= model.DateFrom.Value.Date && rec.DateCreate.Date <= model.DateTo.Value.Date) ||
-                    (model.ClientId.HasValue && rec.ClientId == model.ClientId))
+                    (model.ClientId.HasValue && rec.ClientId == model.ClientId) ||
+                    (model.SearchStatus.HasValue && model.SearchStatus.Value == rec.Status) ||
+                    (model.ImplementerId.HasValue && rec.ImplementerId == model.ImplementerId && model.Status == rec.Status))
                     .Select(rec => new OrderViewModel
                     {
                         Id = rec.Id,
                         ClientId = rec.ClientId,
                         ClientFIO = rec.Client.ClientFIO,
                         PrintedId = rec.PrintedId,
+                        ImplementerId = rec.ImplementerId,
+                        ImplementerFIO = rec.Implementer.ImplementerFIO,
                         PrintedName = rec.Printed.PrintedName,
                         Count = rec.Count,
                         Sum = rec.Sum,
@@ -76,13 +83,19 @@ namespace TypographyDatabaseImplement.Implements
 
             using (var context = new TypographyDatabase())
             {
-                Order order = context.Orders.Include(rec => rec.Printed).Include(rec => rec.Client).FirstOrDefault(rec => rec.Id == model.Id);
+                Order order = context.Orders
+                    .Include(rec => rec.Printed)
+                    .Include(rec => rec.Client)
+                    .Include(rec => rec.Implementer)
+                    .FirstOrDefault(rec => rec.Id == model.Id);
                 return order != null ?
                 new OrderViewModel
                 {
                     Id = order.Id,
                     ClientId = order.ClientId,
                     ClientFIO = order.Client.ClientFIO,
+                    ImplementerId = order.ImplementerId,
+                    ImplementerFIO = order.ImplementerId.HasValue ? order.Implementer.ImplementerFIO : string.Empty,
                     PrintedId = order.PrintedId,
                     PrintedName = order.Printed.PrintedName,
                     Count = order.Count,
@@ -103,6 +116,7 @@ namespace TypographyDatabaseImplement.Implements
                 {
                     ClientId = model.ClientId.Value,
                     PrintedId = model.PrintedId,
+                    ImplementerId = model.ImplementerId,
                     Count = model.Count,
                     Sum = model.Sum,
                     Status = model.Status,
@@ -127,6 +141,7 @@ namespace TypographyDatabaseImplement.Implements
                 }
                 order.ClientId = model.ClientId.Value;
                 order.PrintedId = model.PrintedId;
+                order.ImplementerId = model.ImplementerId;
                 order.Count = model.Count;
                 order.Sum = model.Sum;
                 order.Status = model.Status;

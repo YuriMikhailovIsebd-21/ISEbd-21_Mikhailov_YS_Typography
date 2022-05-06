@@ -64,6 +64,7 @@ namespace TypographyBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 PrintedId = order.PrintedId,
+                ImplementerId = model.ImplementerId,
                 ClientId = order.ClientId,
                 Count = order.Count,
                 Sum = order.Sum,
@@ -92,6 +93,7 @@ namespace TypographyBusinessLogic.BusinessLogics
                 Id = order.Id,
                 PrintedId = order.PrintedId,
                 ClientId = order.ClientId,
+                ImplementerId = order.ImplementerId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
@@ -119,6 +121,7 @@ namespace TypographyBusinessLogic.BusinessLogics
                 Id = order.Id,
                 PrintedId = order.PrintedId,
                 ClientId = order.ClientId,
+                ImplementerId = order.ImplementerId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,

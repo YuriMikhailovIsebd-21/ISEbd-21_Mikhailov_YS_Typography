@@ -12,6 +12,8 @@ namespace TypographyDatabaseImplement.Models
 
         public int ClientId { get; set; }
 
+        public int? ImplementerId { get; set; }
+
         [Required]
         public int Count { get; set; }
 
@@ -29,5 +31,7 @@ namespace TypographyDatabaseImplement.Models
         public virtual Printed Printed { get; set; }
 
         public virtual Client Client { get; set; }
+
+        public virtual Implementer Implementer { get; set; }
     }
 }
