@@ -59,6 +59,28 @@ namespace TypographyDatabaseImplement.Migrations
                     b.ToTable("Components");
                 });
 
+            modelBuilder.Entity("TypographyDatabaseImplement.Models.Implementer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ImplementerFIO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PauseTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkingTime")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Implementers");
+                });
+
             modelBuilder.Entity("TypographyDatabaseImplement.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -78,6 +100,9 @@ namespace TypographyDatabaseImplement.Migrations
                     b.Property<DateTime?>("DateImplement")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("ImplementerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PrintedId")
                         .HasColumnType("int");
 
@@ -90,6 +115,8 @@ namespace TypographyDatabaseImplement.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("ImplementerId");
 
                     b.HasIndex("PrintedId");
 
@@ -148,6 +175,10 @@ namespace TypographyDatabaseImplement.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TypographyDatabaseImplement.Models.Implementer", "Implementer")
+                        .WithMany("Orders")
+                        .HasForeignKey("ImplementerId");
+
                     b.HasOne("TypographyDatabaseImplement.Models.Printed", "Printed")
                         .WithMany("Orders")
                         .HasForeignKey("PrintedId")
@@ -155,6 +186,8 @@ namespace TypographyDatabaseImplement.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
+
+                    b.Navigation("Implementer");
 
                     b.Navigation("Printed");
                 });
@@ -186,6 +219,11 @@ namespace TypographyDatabaseImplement.Migrations
             modelBuilder.Entity("TypographyDatabaseImplement.Models.Component", b =>
                 {
                     b.Navigation("PrintedComponents");
+                });
+
+            modelBuilder.Entity("TypographyDatabaseImplement.Models.Implementer", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("TypographyDatabaseImplement.Models.Printed", b =>

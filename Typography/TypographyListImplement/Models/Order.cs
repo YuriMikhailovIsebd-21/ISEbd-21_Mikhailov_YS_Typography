@@ -13,7 +13,9 @@ namespace TypographyListImplement.Models
 
         public int PrintedId { get; set; }
 
-        public int ClientId { get; set; } 
+        public int ClientId { get; set; }
+
+        public int? ImplementerId { get; set; }
 
         public int Count { get; set; }
 

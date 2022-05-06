@@ -17,6 +17,9 @@ namespace TypographyContracts.BindingModels
         public int PrintedId { get; set; }
 
         [DataMember]
+        public int? ImplementerId{get; set;}
+
+            [DataMember]
         public int Count { get; set; }
 
         [DataMember]
@@ -36,5 +39,8 @@ namespace TypographyContracts.BindingModels
 
         [DataMember]
         public DateTime? DateTo { get; set; }
+
+        [DataMember]
+        public OrderStatus? SearchStatus { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TypographyDatabaseImplement.Migrations
 {
-    public partial class InitialandClient : Migration
+    public partial class implementers : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,6 +36,21 @@ namespace TypographyDatabaseImplement.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Implementers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImplementerFIO = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WorkingTime = table.Column<int>(type: "int", nullable: false),
+                    PauseTime = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Implementers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Printeds",
                 columns: table => new
                 {
@@ -57,6 +72,7 @@ namespace TypographyDatabaseImplement.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PrintedId = table.Column<int>(type: "int", nullable: false),
                     ClientId = table.Column<int>(type: "int", nullable: false),
+                    ImplementerId = table.Column<int>(type: "int", nullable: true),
                     Count = table.Column<int>(type: "int", nullable: false),
                     Sum = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -72,6 +88,12 @@ namespace TypographyDatabaseImplement.Migrations
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_Implementers_ImplementerId",
+                        column: x => x.ImplementerId,
+                        principalTable: "Implementers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Orders_Printeds_PrintedId",
                         column: x => x.PrintedId,
@@ -113,6 +135,11 @@ namespace TypographyDatabaseImplement.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_ImplementerId",
+                table: "Orders",
+                column: "ImplementerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_PrintedId",
                 table: "Orders",
                 column: "PrintedId");
@@ -138,6 +165,9 @@ namespace TypographyDatabaseImplement.Migrations
 
             migrationBuilder.DropTable(
                 name: "Clients");
+
+            migrationBuilder.DropTable(
+                name: "Implementers");
 
             migrationBuilder.DropTable(
                 name: "Components");
