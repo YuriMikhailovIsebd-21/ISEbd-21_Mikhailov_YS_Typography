@@ -10,7 +10,7 @@ namespace TypographyDatabaseImplement
         {
             if (optionsBuilder.IsConfigured == false)
             {
-                optionsBuilder.UseSqlServer(@"Server=localhost;Database=typography;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(@"Server=localhost;Database=typography7;Trusted_Connection=True;");
             }
             base.OnConfiguring(optionsBuilder);
         }
@@ -25,5 +25,6 @@ namespace TypographyDatabaseImplement
         public virtual DbSet<Client> Clients { set; get; }
 
         public virtual DbSet<Implementer> Implementers { set; get; }
+        public virtual DbSet<MessageInfo> Messages { set; get; }
     }
 }
