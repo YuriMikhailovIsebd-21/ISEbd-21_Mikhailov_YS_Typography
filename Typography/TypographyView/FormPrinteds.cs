@@ -26,14 +26,7 @@ namespace TypographyView
         {
             try
             {
-                var list = logic.Read(null);
-                if (list != null)
-                {
-                    dataGridViewPrinteds.DataSource = list;
-                    dataGridViewPrinteds.Columns[0].Visible = false;
-                    dataGridViewPrinteds.Columns[3].Visible = false;
-                    dataGridViewPrinteds.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                }
+                Program.ConfigGrid(logic.Read(null), dataGridViewPrinteds);
             }
             catch (Exception ex)
             {
