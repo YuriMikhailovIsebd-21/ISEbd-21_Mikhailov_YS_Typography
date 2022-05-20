@@ -4,6 +4,7 @@ using TypographyContracts.StoragesContracts;
 using TypographyContracts.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace TypographyBusinessLogic.BusinessLogics
 {
@@ -11,6 +12,9 @@ namespace TypographyBusinessLogic.BusinessLogics
     {
         private readonly IClientStorage _clientStorage;
 
+        private readonly int _passwordMaxLength = 50;
+
+        private readonly int _passwordMinLength = 10;
         public ClientLogic(IClientStorage clientStorage)
         {
             _clientStorage = clientStorage;
@@ -36,10 +40,19 @@ namespace TypographyBusinessLogic.BusinessLogics
             {
                 throw new Exception("Уже есть клиент с таким логином");
             }
+            if (!Regex.IsMatch(model.Email, @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.\s]\w+)*$"))
+            {
+                throw new Exception("В качестве логина должна быть указана почта");
+            }
+            if (model.Password.Length > _passwordMaxLength || model.Password.Length < _passwordMinLength || !Regex.IsMatch(model.Password, @"^((\w+\d+\W+)|(\w+\W+\d+)|(\d+\w+\W+)|(\d+\W+\w+)|(\W+\w+\d+)|(\W+\d+\w+))[\w\d\W]*$"))
+            {
+                throw new Exception($"Пароль должен быть длиной от {_passwordMinLength} до {_passwordMaxLength}, состоять из цифр, букв и небуквенных символов");
+            }
             if (model.Id.HasValue)
             {
                 _clientStorage.Update(model);
             }
+
             else
             {
                 _clientStorage.Insert(model);
